@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/userRegist/regist",
+    "pages/userLogin/login",
+    "pages/videoInfo/videoInfo",
+    "pages/chooseBgm/chooseBgm",
+    "pages/mine/mine",
+    "pages/searchVideo/searchVideo"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "六三一零",
+    "navigationBarTextStyle": "black"
+  },
+  "debug": true,
+  "sitemapLocation": "sitemap.json"
+}
