@@ -3,6 +3,9 @@ const app = getApp()
 Page({
   data: {
     faceUrl: "../resource/images/noneface.png",
+    isMe: true,
+    isFollow: false,
+    publisherId: ''
   },
 
   //第一次打开此页面时调用
@@ -10,9 +13,15 @@ Page({
     var me = this;
     var user = app.getGlobalUserInfo();
     var userId = user.id;
-    var publisherId = params.publisherId;
-    if (publisherId != null && publisherId != undefined && publisherId != '') {
+    me.setData({
+      publisherId: params.publisherId
+    })
+    var publisherId = me.data.publisherId;
+    if (publisherId != null && publisherId != undefined && publisherId != '' && userId != publisherId) {
       userId = publisherId;
+      me.setData({
+        isMe: false
+      });
     }
 
     console.log(user);
@@ -22,7 +31,7 @@ Page({
     var serverUrl = app.serverUrl;
     // 调用后端
     wx.request({
-      url: serverUrl + '/user/query?userId=' + userId,
+      url: serverUrl + '/user/query?userId=' + userId + "&fanId=" + user.id,
       method: "POST",
       header: {
         'content-type': 'application/json', // 默认值
@@ -46,7 +55,8 @@ Page({
             fansCounts: userInfo.fansCounts,
             followCounts: userInfo.followCounts,
             receiveLikeCounts: userInfo.receiveLikeCounts,
-            nickname: userInfo.nickname
+            nickname: userInfo.nickname,
+            isFollow: userInfo.follow
           })
         } else if (res.data.status == 502) {
           wx.showToast({
@@ -64,6 +74,52 @@ Page({
         }
       }
     })
+  },
+
+
+  followMe: function(e) {
+    var me = this;
+    var user = app.getGlobalUserInfo();
+    var userId = user.id;
+    var publisherId = me.data.publisherId;
+
+    var followType = e.currentTarget.dataset.followtype;
+
+    //1关注0取关
+    var url = '';
+    if(followType == '1') {
+      url = '/user/beyourfans?userId=' + publisherId + "&fanId=" + userId;
+    } else {
+      url = '/user/dontbeyourfans?userId=' + publisherId + "&fanId=" + userId;
+    }
+
+    wx.showLoading({
+      title: '...',
+    });
+    wx.request({
+      url: app.serverUrl + url,
+      method: 'POST',
+      header: {
+        'content-type': 'application/json', // 默认值
+        'headerUserId': userId,
+        'headerUserToken': user.userToken
+      },
+      success: function() {
+        wx.hideLoading();
+        if (followType == '1') {
+          me.setData({
+            isFollow: true,
+            fansCounts: ++me.data.fansCounts
+          });
+        } else {
+          me.setData({
+            isFollow: false,
+            fansCounts: --me.data.fansCounts
+          });
+        }
+      }
+    })
+
   },
 
   //注销
