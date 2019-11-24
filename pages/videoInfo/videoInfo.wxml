@@ -20,7 +20,7 @@
 
     <cover-view class='container-me'>
       <!-- 头像 -->
-      <cover-image class="face" src='http://121.248.51.103:6310/191114DDA76R4940/face/wx43b6ab071612ff7e.o6zAJswYLTgxeX4M_Zqa4a6rn5Qc.pWyH0PzTryWB11325796ccab8ea8da15bc4ac6ecef68.png' bindtap='showPublisher'></cover-image>
+      <cover-image class="face" src='{{serverUrl}}{{publisher.faceImage}}' bindtap='showPublisher'></cover-image>
       <!-- 喜欢收藏按钮 -->
       <block wx:if="{{userLikeVideo}}">
           <cover-image class="size-me" src='../resource/images/like.png' style='margin-top:30rpx;' bindtap='likeVideoOrNot'></cover-image>

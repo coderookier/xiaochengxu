@@ -21,13 +21,15 @@ Page({
     });
 
     var serverUrl = app.serverUrl;
-
+    var user = app.getGlobalUserInfo();
     wx.request({
       url: serverUrl + '/bgm/list',
       method: "POST",
 
       header: {
-        'content-type': 'application/json' // 默认值
+        'content-type': 'application/json', // 默认值
+        'headerUserId': user.id,
+        'headerUserToken': user.userToken
       },
       success: function(res) {
         console.log(res.data);
@@ -79,6 +81,8 @@ Page({
       name: 'file',
       header: {
         'content-type': 'application/json',
+        'headerUserId': userInfo.id,
+        'headerUserToken': userInfo.userToken
       },
       success: function (res) {
         //转为JSON对象
@@ -92,9 +96,9 @@ Page({
             duration: 2000
           });
         }
-        //跳转到个人主页
-        wx.navigateTo({
-          url: '../mine/mine',
+        //上传成功后跳回之前的页面
+        wx.navigateBack({
+          delta: 1
         })
       }
     })

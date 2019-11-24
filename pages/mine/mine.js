@@ -6,10 +6,15 @@ Page({
   },
 
   //第一次打开此页面时调用
-  onLoad: function() {
+  onLoad: function(params) {
     var me = this;
-
     var user = app.getGlobalUserInfo();
+    var userId = user.id;
+    var publisherId = params.publisherId;
+    if (publisherId != null && publisherId != undefined && publisherId != '') {
+      userId = publisherId;
+    }
+
     console.log(user);
     wx.showLoading({
       title: '加载中...',
@@ -17,12 +22,12 @@ Page({
     var serverUrl = app.serverUrl;
     // 调用后端
     wx.request({
-      url: serverUrl + '/user/query?userId=' + user.id,
+      url: serverUrl + '/user/query?userId=' + userId,
       method: "POST",
       header: {
         'content-type': 'application/json', // 默认值
-        'userId': user.id,
-        'userToken': user.userToken
+        'headerUserId': user.id,
+        'headerUserToken': user.userToken
       },
       success: function (res) {
         console.log(res.data);
@@ -118,7 +123,9 @@ Page({
           filePath: tempFilePaths[0],
           name: 'file',
           header: {
-            'content-type': 'application/json' // 默认值
+            'content-type': 'application/json', // 默认值
+            'headerUserId': userInfo.id,
+            'headerUserToken': userInfo.userToken
           },
           success: function(res) {
             //转为JSON对象

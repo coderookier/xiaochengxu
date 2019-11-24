@@ -38,6 +38,28 @@ Page({
       videoInfo: videoInfo,
       cover: cover
     })
+
+    var user = app.getGlobalUserInfo();
+    var serverUrl = app.serverUrl;
+    var loginUserId = "";
+    if (user != null && user != undefined && user != '') {
+      loginUserId = user.id;
+    }
+    wx.request({
+      url: serverUrl + '/user/queryPublisher?loginUserId=' + loginUserId + "&videoId=" + videoInfo.id + "&publishUserId=" + videoInfo.userId,
+      method: 'POST',
+      success: function(res) {
+        console.log(res.data);
+        var publisher = res.data.data.publisher;
+        var userLikeVideo = res.data.data.userLikeVideo;
+        me.setData({
+          serverUrl: serverUrl,
+          publisher: publisher,
+          userLikeVideo: userLikeVideo,
+        });
+      }
+    })
+
   },
 
   onShow: function() {
@@ -55,6 +77,25 @@ Page({
       url: '../searchVideo/searchVideo',
     })
   },
+
+  showPublisher: function () {
+    var me = this;
+    var user = app.getGlobalUserInfo();
+    var videoInfo = me.data.videoInfo;
+    //需要回调的地址，以字符串形式传入到登录页面，从而登录成功进行跳转到该页面
+    var realUrl = '../videoInfo/#publisherId@' + videoInfo.userId;
+    if (user == null || user == undefined || user == '') {
+      wx.navigateTo({
+        url: '../userLogin/login?redirectUrl=' + realUrl,
+      })
+    } else {
+      wx.navigateTo({
+        url: '../mine/mine?publisherId=' + videoInfo.userId,
+      })
+    }
+  },
+
+
 
   upload: function() {
     var me = this;
@@ -114,8 +155,8 @@ Page({
         method: "POST",
         header: {
           'content-type': 'application/json', // 默认值
-          'userId': user.id,
-          'userToken': user.userToken
+          'headerUserId': user.id,
+          'headerUserToken': user.userToken
         },
         success: function(res) {
           wx.hideLoading();
@@ -126,4 +167,5 @@ Page({
       })
     }
   }
+
 })
