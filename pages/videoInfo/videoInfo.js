@@ -12,7 +12,13 @@ Page({
     videoId: "",
     src: "",
     videoInfo: {},
-    userLikeVideo: false
+    userLikeVideo: false,
+
+    commentsPage: 1,
+    commentsTotalPage: 1,
+    commentsList: [],
+
+    placeholder: "说点什么..."
   },
 
   //video上下文对象
@@ -59,6 +65,8 @@ Page({
         });
       }
     })
+
+    me.getCommentsList(1);
 
   },
 
@@ -177,6 +185,31 @@ Page({
       success: function(res) {
         if (res.tapIndex == 0) {
           //下载
+          wx.showLoading({
+            title: '下载中...',
+          })
+          wx.downloadFile({
+            url: app.serverUrl + me.data.videoInfo.videoPath,
+            success: function (res) {
+              if (res.statusCode == 200) {
+                console.log(res.tempFilePath);
+                wx.saveVideoToPhotosAlbum({
+                  filePath: res.tempFilePath,
+                  success: function(res) {
+                    console.log(res.errMsg)
+                    wx.hideLoading();
+                    wx.showToast({
+                      title: '下载成功',
+                      icon: 'success',
+                      duration: 2000
+                    })
+                  }
+                })
+              }
+            }
+          })
+
+
         } else if (res.tapIndex == 1) {
           //举报
           var videoInfo = JSON.stringify(me.data.videoInfo);
@@ -203,7 +236,7 @@ Page({
       }
     })
   },
-  
+
   onShareAppMessage: function (res) {
     var me = this;
     var videoInfo = me.data.videoInfo;
@@ -211,6 +244,118 @@ Page({
       title: '分享短视频内容',
       path: 'pages/videoInfo/videoInfo?videoInfo=' + JSON.stringify(videoInfo)
     }
+  },
+
+  leaveComment: function() {
+    this.setData({
+      commentFocus: true,
+      placeholder: "说点什么吧...",
+      replyFatherCommentId: '',
+      replyToUserId: '',
+    });
+  },
+
+  saveComment: function(e) {
+    var me = this;
+    var content = e.detail.value;
+
+    //获取评论回复的fatherCommentId和toUserId
+    var fatherCommentId = e.currentTarget.dataset.replyfathercommentid;
+    var toUserId = e.currentTarget.dataset.replytouserid; 
+
+    var user = app.getGlobalUserInfo();
+    var videoInfo = JSON.stringify(me.data.videoInfo);
+    var realUrl = '../videoInfo/videoInfo#videoInfo@' + videoInfo;
+
+    if (user == null || user == undefined || user == '') {
+      wx.navigateTo({
+        url: '../userLogin/login?redirectUrl=' + realUrl,
+      })
+    } else {
+      wx.showLoading({
+        title: '...',
+      })
+      wx.request({
+        url: app.serverUrl + '/video/saveComment?fatherCommentId=' + fatherCommentId + "&toUserId=" + toUserId,
+        method: 'POST',
+        header: {
+          'content-type': 'application/json', // 默认值
+          'headerUserId': user.id,
+          'headerUserToken': user.userToken
+        },
+        data: {
+          fromUserId: user.id,
+          videoId: me.data.videoInfo.id,
+          comment: content
+        },
+        success: function(res) {
+          wx.hideLoading();
+          console.log(res.data);
+          me.setData({
+            contentValue: '',
+            commentsList: [],
+            commentFocus: false
+          });
+
+          me.getCommentsList(1);
+        }
+      })
+    }
+  },
+
+  getCommentsList: function(page) {
+    var me = this;
+    var videoId = me.data.videoInfo.id;
+    wx.request({
+      url: app.serverUrl + '/video/getVideoComments?videoId=' + videoId + "&page=" + page + "&pageSize=3",
+      method: 'POST',
+      success: function(res) {
+        console.log(res.data);
+        if (page == 1) {
+          me.setData({
+            commentsList: []
+          })
+        }
+        var newCommentsList = res.data.data.rows;
+        var commentsList = me.data.commentsList;
+
+        me.setData({
+          commentsList: commentsList.concat(newCommentsList),
+          commentsPage: page,
+          commentsTotalPage: res.data.data.total
+        });
+      }
+    })
+  },
+
+  onReachBottom: function () {
+    var me = this;
+    var currentPage = me.data.commentsPage;
+    var totalPage = me.data.commentsTotalPage;
+    if (currentPage === totalPage) {
+      return;
+    }
+    var page = currentPage + 1;
+    me.getCommentsList(page);
+  },
+
+  //回复评论
+  replyFocus: function(e) {
+    var me = this;
+    var fatherCommentId = e.currentTarget.dataset.fathercommentid; 
+    var userId = app.getGlobalUserInfo().id;
+    var toUserId = e.currentTarget.dataset.touserid; 
+    //不能回复自身
+    if (userId == toUserId) {
+      return;
+    }
+    var toNickname = e.currentTarget.dataset.tonickname; 
+    me.setData({
+      placeholder: "回复" + toNickname,
+      replyFatherCommentId: fatherCommentId,
+      replyToUserId: toUserId,
+      commentFocus: true
+    });
   }
 
 })

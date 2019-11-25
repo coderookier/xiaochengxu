@@ -1,14 +1,5 @@
-
 <view style="width:100%;height:100%;">
-  <video  id="myVideo" src="{{src}}"
-    danmu-list="{{damulist}}"
-    enable-danmu="{{true}}"
-    danmu-btn="{{true}}"
-    direction="0"
-    autoplay="true"
-    enable-progress-gesture="{{true}}"
-    style="width:100%;height:100%;"
-    objectFit="{{cover}}">
+  <video id="myVideo" src="{{src}}" danmu-list="{{damulist}}" enable-danmu="{{true}}" danmu-btn="{{true}}" direction="0" autoplay="true" enable-progress-gesture="{{true}}" style="width:100%;height:100%;" objectFit="{{cover}}">
 
     <cover-view class='container'>
       <!-- 上传视频 -->
@@ -23,10 +14,10 @@
       <cover-image class="face" src='{{serverUrl}}{{publisher.faceImage}}' bindtap='showPublisher'></cover-image>
       <!-- 喜欢收藏按钮 -->
       <block wx:if="{{userLikeVideo}}">
-          <cover-image class="size-me" src='../resource/images/like.png' style='margin-top:30rpx;' bindtap='likeVideoOrNot'></cover-image>
+        <cover-image class="size-me" src='../resource/images/like.png' style='margin-top:30rpx;' bindtap='likeVideoOrNot'></cover-image>
       </block>
       <block wx:else>
-          <cover-image class="size-me" src='../resource/images/unlike.png' style='margin-top:30rpx;' bindtap='likeVideoOrNot'></cover-image>
+        <cover-image class="size-me" src='../resource/images/unlike.png' style='margin-top:30rpx;' bindtap='likeVideoOrNot'></cover-image>
       </block>
 
       <!-- 评论按钮 -->
@@ -36,7 +27,7 @@
       <cover-image class="size-me" src='../resource/images/share.png' style='margin-top:30rpx;' bindtap='shareMe'></cover-image>
 
     </cover-view>
-      <cover-view class='container-words'>
+    <cover-view class='container-words'>
       <cover-view>@{{publisher.nickname}}</cover-view>
       <cover-view class='video-desc'>{{videoInfo.videoDesc}}</cover-view>
     </cover-view>
@@ -49,6 +40,32 @@
       <cover-image class='' src='../resource/images/mine.png' class="size-bottom" bindtap='showMine'></cover-image>
     </cover-view>
   </video>
-
 </view>
 
+<view>
+  <view class="saySthView">
+    <input name="commentContent" class="saySth" placeholder="{{placeholder}}" confirm-type="send" bindconfirm="saveComment" focus='{{commentFocus}}' value='{{contentValue}}' data-replyFatherCommentId='{{replyFatherCommentId}}' data-replyToUserId='{{replyToUserId}}'
+    />
+  </view>
+
+  <block wx:for="{{commentsList}}">
+    <view class="comments-all" bindtap="replyFocus" data-fatherCommentId="{{item.id}}" data-toUserId="{{item.fromUserId}}" data-toNickname="{{item.nickname}}">
+      <view class="container-comments">
+        <image class="face-comments" src="{{serverUrl}}{{item.faceImage}}"></image>
+        <view class="nickname-comments">
+          <label class="nickname-lbl">@{{item.nickname}}</label>
+          于
+          <label class="nickname-lbl">{{item.timeAgoStr}}</label>
+          <block wx:if="{{item.toNickname != null}}">
+            回复
+            <label class='nickname-lbl'>@{{item.toNickname}}</label>
+          </block>
+          <block wx:else>
+            留言：
+          </block>
+        </view>
+      </view>
+      <view class="comments-content">{{item.comment}}</view>
+    </view>
+  </block>
+</view>

@@ -1,6 +1,6 @@
 //app.js
 App({
-  serverUrl: "http://121.248.53.230:6310",
+  serverUrl: "http://121.248.49.153:6310",
   userInfo: null,
 
   //数据缓存保存用户全局信息
