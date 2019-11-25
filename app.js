@@ -10,6 +10,18 @@ App({
 
   getGlobalUserInfo: function () {
     return wx.getStorageSync("userInfo");
-  }
+  },
+
+  reportReasonArray: [
+    "色情低俗",
+    "政治敏感",
+    "涉嫌诈骗",
+    "辱骂谩骂",
+    "广告垃圾",
+    "暴力行为",
+    "违法违纪",
+    "诱导分享",
+    "其他原因"
+  ]
 
 })

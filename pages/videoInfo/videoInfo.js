@@ -166,6 +166,51 @@ Page({
         }
       })
     }
+  },
+
+  shareMe: function() {
+    var me = this;
+    var user = app.getGlobalUserInfo();
+    
+    wx.showActionSheet({
+      itemList: ['下载到本地', '举报用户', '分享到朋友圈', '分享到微博'],
+      success: function(res) {
+        if (res.tapIndex == 0) {
+          //下载
+        } else if (res.tapIndex == 1) {
+          //举报
+          var videoInfo = JSON.stringify(me.data.videoInfo);
+          var realUrl = '../videoInfo/videoInfo#videoInfo@' + videoInfo;
+          if (user == null || user == undefined || user == '') {
+            wx.navigateTo({
+              url: '../userLogin/login?redirectUrl=' + realUrl,
+            })
+          } else {
+            var publishUserId = me.data.videoInfo.userId;
+            var videoId = me.data.videoInfo.id;
+            var currentUserId = user.id;
+            wx.navigateTo({
+              url: '../report/report?videoId=' + videoId + "&publishUserId=" + publishUserId
+            })
+          }
+        } else {
+          wx.showToast({
+            title: '微信暂未开放此功能',
+            icon: 'none',
+            duration: 1000
+          })
+        }
+      }
+    })
+  },
+  
+  onShareAppMessage: function (res) {
+    var me = this;
+    var videoInfo = me.data.videoInfo;
+    return {
+      title: '分享短视频内容',
+      path: 'pages/videoInfo/videoInfo?videoInfo=' + JSON.stringify(videoInfo)
+    }
   }
 
 })

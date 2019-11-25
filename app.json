@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/report/report",
     "pages/userLogin/login",
     "pages/userRegist/regist",
     "pages/videoInfo/videoInfo",
