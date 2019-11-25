@@ -8,8 +8,10 @@ Page({
   onLoad: function(params) {
     var me = this;
     var redirectUrl = params.redirectUrl;
-    redirectUrl = redirectUrl.replace(/#/g, "?");
-    redirectUrl = redirectUrl.replace(/@/g, "=");
+    if (redirectUrl != null && redirectUrl != undefined && redirectUrl != '') {
+      redirectUrl = redirectUrl.replace(/#/g, "?");
+      redirectUrl = redirectUrl.replace(/@/g, "=");
+    }
     me.redirectUrl = redirectUrl;
   },
 

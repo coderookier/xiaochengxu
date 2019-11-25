@@ -1,8 +1,8 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/userRegist/regist",
     "pages/userLogin/login",
+    "pages/userRegist/regist",
     "pages/videoInfo/videoInfo",
     "pages/chooseBgm/chooseBgm",
     "pages/mine/mine",
@@ -14,5 +14,6 @@
     "navigationBarTitleText": "六三一零",
     "navigationBarTextStyle": "black"
   },
-  "debug": true
+  "debug": true,
+  "sitemapLocation": "sitemap42.json"
 }
