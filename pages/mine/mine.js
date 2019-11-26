@@ -109,7 +109,7 @@ Page({
     })
   },
 
-
+  //关注或者取关用户
   followMe: function(e) {
     var me = this;
     var user = app.getGlobalUserInfo();
@@ -244,7 +244,10 @@ Page({
     });
   },
 
+  //个人主页进行上传视频
   uploadVideo: function() {
+
+    //选择视频
     wx.chooseVideo({
       sourceType: ['album', 'camera'],
       camera: 'back',
@@ -274,7 +277,7 @@ Page({
           //视频选择没有问题，进行bgm选择
           wx.navigateTo({
             //参数值一起传到下个页面
-            //下一页面接收的参数值必须与"&tmpHeight="一致，否则遇到想不到的错误改半天，气死人
+            //下一页面接收的参数值必须与"&tmpHeight="一致
             url: '../chooseBgm/chooseBgm?duration=' + duration
               + "&tmpHeight=" + tmpHeight
               + "&tmpWidth=" + tmpWidth

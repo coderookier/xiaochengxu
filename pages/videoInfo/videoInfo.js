@@ -23,6 +23,8 @@ Page({
 
   //video上下文对象
   videoCtx: {},
+
+  //加载视频详情页时触发的查询
   onLoad: function(params) {
     var me = this;
     me.videoCtx = wx.createVideoContext("myVideo", me);
@@ -51,6 +53,8 @@ Page({
     if (user != null && user != undefined && user != '') {
       loginUserId = user.id;
     }
+
+    //查询视频发布者的头像，昵称，以及当前登录者是否点赞过该视频
     wx.request({
       url: serverUrl + '/user/queryPublisher?loginUserId=' + loginUserId + "&videoId=" + videoInfo.id + "&publishUserId=" + videoInfo.userId,
       method: 'POST',
@@ -86,6 +90,7 @@ Page({
     })
   },
 
+  //点击视频详情页面中的发布者头像，跳转到发布者个人主页显示个人信息
   showPublisher: function () {
     var me = this;
     var user = app.getGlobalUserInfo();
@@ -176,6 +181,7 @@ Page({
     }
   },
 
+  //视频详情页面的分享按钮，具有下载，举报等功能
   shareMe: function() {
     var me = this;
     var user = app.getGlobalUserInfo();
@@ -193,6 +199,7 @@ Page({
             success: function (res) {
               if (res.statusCode == 200) {
                 console.log(res.tempFilePath);
+                //保存视频到相册
                 wx.saveVideoToPhotosAlbum({
                   filePath: res.tempFilePath,
                   success: function(res) {
